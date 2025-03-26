@@ -1,9 +1,14 @@
 import User from "../modules/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "cloudinary";
+import generateToken from "../lib/utils.js";
+
 export const signup = async (req, res) => {
-  const { email, password, fullName, profilePic } = req.body;
+  const { email, password, fullName } = req.body;
   try {
+    if (!email || !fullName || !password) {
+      return res.status(400).json({ message: "all fields are required" });
+    }
     const user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "user already exist" });
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -11,18 +16,16 @@ export const signup = async (req, res) => {
       email,
       fullName,
       password: hashedPassword,
-      profilePic,
     });
     if (newUser) {
+      generateToken(newUser._id,res)
       await newUser.save();
       console.log(newUser);
-      res.status(201),
-        json({
-          email: newUser.email,
-          fullName: newUser.fullName,
-          password: newUser.password,
-          profilePic: newUser.profilePic,
-        });
+      res.status(201).json({
+        email: newUser.email,
+        fullName: newUser.fullName,
+        password: newUser.password,
+      });
     } else {
       res.status(400).json({ message: "invalid userData" });
     }
@@ -33,6 +36,7 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
+  
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -43,12 +47,14 @@ export const login = async (req, res) => {
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
-
+    generateToken(user._id,res);
     res.status(200).json({
-      message: "Login Successful with data:",
+      _id: user._id,
+      fullName: user.fullName,
       email: user.email,
       password: user.password,
     });
+    console.log("login successful")
   } catch (error) {
     console.error("Error in login", error.message);
     res.status(500).json({ message: "internal server error" });
