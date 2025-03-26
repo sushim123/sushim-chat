@@ -4,5 +4,6 @@ const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/update-profile",protectRoute, updateProfile);
 
 export default router;
