@@ -53,7 +53,7 @@ const ProfilePage = () => {
                   }
                 `}
               >
-                <Camera className="w-5 h-5 text-base-200" />
+                <Camera className="w-5 h-5 text-base-200 hover:text-accent" />
                 <input
                   type="file"
                   id="avatar-upload"
@@ -94,7 +94,7 @@ const ProfilePage = () => {
                   <>
                     <span>{name}</span>
                     <Pencil
-                      className="w-5 h-5 text-zinc-500 cursor-pointer"
+                      className="w-5 h-5 text-zinc-500 cursor-pointer hover:text-accent"
                       onClick={() => setIsEditing(true)}
                     />
                   </>
