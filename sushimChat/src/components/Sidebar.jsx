@@ -29,10 +29,10 @@ const Sidebar = () => {
           onClick={() => setSelected(user)}
           className={`
               w-full p-3 flex items-center gap-3
-              hover:bg-red-500 transition-colors
+              hover:bg-gradient-to-r from-blue-400 through-red-300 to-green-500 transition-colors
               ${
                 selectedUser?._id === user._id
-                  ? "bg-red-600 ring-1 ring-base-300"
+                  ? "bg-gradient-to-r from-blue-400 through-red-300 to-green-500 ring-1 ring-base-300"
                   : ""
               }
             `}
