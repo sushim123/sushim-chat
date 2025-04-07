@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import  profileImage  from "../assets/profile.png";
+import profileImage from "../assets/profile.png";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User } from "lucide-react";
+import { Camera, Mail, Pencil, PenSquare, User } from "lucide-react";
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
+  const { authUser, isUpdatingProfile, updateProfile, updateFullName } =
+    useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(authUser?.fullName || "");
+  const handleSave = async () => {
+    setIsEditing(false);
+    await updateFullName({ fullName: name });
+  };
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -30,7 +37,7 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={selectedImage ||authUser.profilePic || profileImage}
+                src={selectedImage || authUser.profilePic || profileImage}
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4 "
               />
@@ -70,9 +77,29 @@ const ProfilePage = () => {
                 <User className="w-4 h-4" />
                 Full Name
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
-                {authUser?.fullName }
-              </p>
+              <div className="px-4 py-2.5 bg-base-200 rounded-lg flex items-center justify-between border">
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onBlur={handleSave}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSave();
+                    }}
+                    autoFocus
+                    className="bg-transparent outline-none w-full"
+                  />
+                ) : (
+                  <>
+                    <span>{name}</span>
+                    <Pencil
+                      className="w-5 h-5 text-zinc-500 cursor-pointer"
+                      onClick={() => setIsEditing(true)}
+                    />
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="space-y-1.5">
