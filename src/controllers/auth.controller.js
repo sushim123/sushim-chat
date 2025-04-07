@@ -89,6 +89,25 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+export const updateFullName = async (req, res) => {
+  try {
+    const { fullName } = req.body;
+    const userId = req.user._id;
+    if (!fullName) {
+      return res.status(400).json({ message: "fullName is required" });
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { fullName },
+      { new: true }
+    );
+    console.log(updatedUser)
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("error in updating fullname", error.message);
+    res.status(500).json({ message: "internal server error" });
+  }
+};
 export const checkAuth = (req, res) => {
   try {
     res.status(200).json(req.user);
