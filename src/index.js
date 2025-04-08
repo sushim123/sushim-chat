@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://sushim-chat.vercel.app", "http://localhost:5173"],
+    origin: "https://sushim-chat.vercel.app",
     credentials: true,
   })
 );
