@@ -30,10 +30,10 @@ const Sidebar = () => {
           onClick={() => setSelected(user)}
           className={`
               w-full p-3 flex items-center gap-3
-              hover:bg-gradient-to-r from-blue-400 through-red-300 to-green-500 transition-colors
+              hover:bg-gray-300 hover:text-white transition-colors
               ${
                 selectedUser?._id === user._id
-                  ? "bg-gradient-to-r from-blue-400 through-red-300 to-green-500 ring-1 ring-base-300"
+                  ? "bg-gray-400 text-white ring-1 "
                   : ""
               }
             `}
@@ -53,7 +53,7 @@ const Sidebar = () => {
           </div>
           <div className="hidden lg:block text-left min-w-0">
             <div className="font-medium truncate">{user.fullName}</div>
-            <div className="text-sm text-zinc-400">
+            <div className={`text-sm ${onlineUsers.includes(user._id) ?"text-green-400":"text-black"}`}>
               {onlineUsers.includes(user._id) ? "Online" : "Offline"}
             </div>
           </div>

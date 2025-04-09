@@ -48,12 +48,14 @@ const ChatContaineer = () => {
                 />
               </div>
             </div>
-            <div className="chat-header mb-1 bg-transparent text-black">
+            <div className="chat-header mb-1 bg-[#F1F1F1] text-black">
               <time className="text-xs ml-1">
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className="chat-bubble flex flex-col bg-transparent text-black">
+            <div className={`chat-bubble flex flex-col bg-[#F1F1F1] text-black ${
+              message.senderId === authUser._id?"bg-blue-500 text-white":"text-black"
+            }`}>
               {message.image && (
                 <img
                   src={message.image}
