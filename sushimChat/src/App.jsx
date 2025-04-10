@@ -8,14 +8,18 @@ import ProfilePage from "./pages/ProfilePage";
 import { useAuthStore } from "./store/useAuthStore.js";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import {Toaster} from"react-hot-toast"
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  console.log(onlineUsers);
   console.log({ authUser });
+
   if (isCheckingAuth && !authUser)
     return (
       <div className="flex justify-center items-center h-screen bg-gray-900">
@@ -37,7 +41,6 @@ const App = () => {
         </div>
       </div>
     );
-  
 
   return (
     <div>
@@ -62,7 +65,7 @@ const App = () => {
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
       </Routes>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 };

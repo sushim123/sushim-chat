@@ -5,15 +5,30 @@ import MessageInput from "../components/MessageInput";
 import MessageSkeleton from "../components/skeleton/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import profilePng from "../assets/profile.png";
-import {formatMessageTime} from "../lib/utils.js";
+import { formatMessageTime } from "../lib/utils.js";
 
 const ChatContaineer = () => {
   const { authUser } = useAuthStore();
-  const { messages, isMessagesLoading, getMessages, selectedUser } =
-    useChatStore();
+  const {
+    messages,
+    isMessagesLoading,
+    getMessages,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  } = useChatStore();
+
   useEffect(() => {
     getMessages(selectedUser._id);
-  }, [selectedUser._id, getMessages]);
+    subscribeToMessages();
+
+    return () => unsubscribeFromMessages();
+  }, [
+    selectedUser._id,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ]);
 
   if (isMessagesLoading) {
     return (
@@ -53,9 +68,13 @@ const ChatContaineer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className={`chat-bubble flex flex-col bg-[#F1F1F1] text-black ${
-              message.senderId === authUser._id?"bg-blue-500 text-white":"text-black"
-            }`}>
+            <div
+              className={`chat-bubble flex flex-col bg-[#F1F1F1] text-black ${
+                message.senderId === authUser._id
+                  ? "bg-blue-500 text-white"
+                  : "text-black"
+              }`}
+            >
               {message.image && (
                 <img
                   src={message.image}
