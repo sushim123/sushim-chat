@@ -3,19 +3,19 @@ import router from "./routes/auth.routes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
+import { app, server } from "./lib/socket.js";
 import { mongoDB } from "./lib/db.js";
 import messageRoutes from "./routes/message.routes.js";
-dotenv.config();
 
-const app = express();
+
+dotenv.config();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://sushim-chat.vercel.app" ,"http://localhost:5173"],
+    origin: ["https://sushim-chat.vercel.app", "http://localhost:5173"],
     credentials: true,
   })
 );
