@@ -50,18 +50,18 @@ export const useChatStore = create((set, get) => ({
   },
 
   subscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-
     const socket = useAuthStore.getState().socket;
-const state= socket.type
-console.log(state)
+    if (!socket) return;
+  
+    socket.off("newMessage"); 
+  
     socket.on("newMessage", (newMessage) => {
-      console.log("new message recived", newMessage);
-      set({ messages: [...get().messages, newMessage] });
+      const current = get().messages;
+      console.log("new message recived:", newMessage); // 🔍 Check this
+      set({ messages: [...current, newMessage] });
     });
   },
-
+  
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
@@ -69,5 +69,7 @@ console.log(state)
 
   setSelected: async (selectedUser) => {
     set({ selectedUser });
+     await get().getMessages(selectedUser._id); 
+    get().subscribeToMessages(); 
   },
 }));
