@@ -59,9 +59,10 @@ export const sendMessage = async (req, res) => {
     const reciverSocketId = getReceiverSocketId(receiverId);
     if (reciverSocketId) {
       io.to(reciverSocketId).emit("newMessage", newMessage);
-      console.log("new message", newMessage);
+      console.log("Emitting new message to:", reciverSocketId);
+
     }
-    console.log("hello",reciverSocketId)
+   
 
     res.status(201).json(newMessage);
   } catch (error) {

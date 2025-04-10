@@ -24,7 +24,7 @@ app.use("/api/auth", router);
 app.use("/api/message", messageRoutes);
 
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
   mongoDB();
 });
