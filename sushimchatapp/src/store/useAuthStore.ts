@@ -26,8 +26,8 @@ type useAuthStoreInstance = {
   checkAuth?: () => Promise<void>;
   connectSocket: () => void;
   disconnectSocket: () => void;
-  signup?: (data: SignUpAndLoginData) => Promise<void>;
-  login?: (data: SignUpAndLoginData) => Promise<void>;
+  signup?: (data: SignUpAndLoginData) => Promise<boolean>;
+  login?: (data: SignUpAndLoginData) => Promise<boolean>;
   updateProfile?: (profilePic: string) => Promise<void>;
   updateFullName?: (fullName: string) => Promise<void> | undefined;
   authUser: AuthUser | null;
@@ -65,28 +65,30 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      
+
       set({ authUser: res.data });
       toast.success("Account Created Successfully");
-      get().connectSocket();
+      // get().connectSocket();
+      return true;
     } catch (error: any) {
       toast.error(error.response.data.message);
+      return false
     } finally {
       set({ isSigningUp: false });
     }
   },
 
   login: async (data) => {
-    set({
-      isloggingIn: true,
-    });
+    set({ isloggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Login Successfully");
       get().connectSocket();
+      return true;
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Login failed");
+      return false;
     } finally {
       set({ isloggingIn: false });
     }

@@ -3,7 +3,9 @@ import React, { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { EyeClosed, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 const LogInPage = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -13,7 +15,8 @@ const LogInPage = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (login) {
-      login(formData);
+      const success = await login(formData);
+      if (success) router.push("/Homepage");
     }
   };
 
@@ -71,7 +74,7 @@ const LogInPage = () => {
               type="submit"
               className="w-full h-10 flex gap-[10px] items-center justify-center bg-[#005FB9] rounded-[7.11px]"
             >
-              Sign In
+              {isloggingIn ? "...signing In" : "Sign In"}
             </button>
           </form>
 

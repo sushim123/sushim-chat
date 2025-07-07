@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { EyeClosed, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,11 +13,14 @@ const SignUpPage = () => {
     fullName: "",
   });
   const { signup, isSigningUp } = useAuthStore();
+  const router = useRouter();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(formData);
     if (signup) {
-      signup(formData);
+      const success = await signup(formData);
+      if (success) {
+        router.push("/login");
+      }
     }
   };
 
@@ -82,16 +86,17 @@ const SignUpPage = () => {
                 </button>
               </div>
             </div>
-            <Link href="/login">
-              <div
+           
+              <button
+                type="submit"
                 className="w-full h-10 flex gap-[10px] items-center justify-center rounded-[7.11px] text-white"
                 style={{
                   backgroundColor: isSigningUp ? "lightblue" : "#005FB9",
                 }}
               >
                 {isSigningUp ? <Loader2 /> : "Sign Up"}
-              </div>
-            </Link>
+              </button>
+           
           </form>
 
           <p className="w-full h-4 text-center">or continue with</p>
