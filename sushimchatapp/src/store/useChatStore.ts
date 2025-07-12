@@ -40,7 +40,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     try {
       const res = await axiosInstance.get("/message/getuser");
 
-      set({ users: res.data.users });
+      set({ users: res.data });
 
       toast.success("All users are loaded successfully");
     } catch (error) {

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "../modules/user.model.js";
+import User from "@/modules/user.model";
+import { mongoDB } from "@/lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
 declare module "next" {
@@ -8,37 +9,35 @@ declare module "next" {
   }
 }
 
-export const protectRoute = async (
-  req: NextApiRequest,
-  res: NextApiResponse,
-  next: () => void
+export const protectRoute = (
+  handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
 ) => {
-  try {
-    const token = req.cookies.jwt;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "User is unauthorized -No token provided" });
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    try {
+      await mongoDB();
+console.log("JWT Cookie:", req.cookies.jwt);
+      const token = req.cookies?.jwt;
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized: No token" });
+      }
+
+      const jwtSecret = process.env.JWT_SECRET!;
+      const decoded = jwt.verify(token, jwtSecret);
+  console.log("Decoded:", decoded);
+      const userId = (decoded as jwt.JwtPayload).userId;
+      const user = await User.findById(userId).select("-password");
+ console.log("Found user:", user);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      req.user = user;
+
+      return handler(req, res);
+    } catch (error) {
+      console.error("protectRoute error:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.log("no secret found in env");
-      return res.status(500).json({ message: "No secret found" });
-    }
-    const decoded = jwt.verify(token, jwtSecret);
-    if (!decoded || typeof decoded === "string" || !("userId" in decoded)) {
-      return res.status(401).json({ message: "Unauthorized - invalid token" });
-    }
-    const userId = (decoded as jwt.JwtPayload).userId;
-    const user = await User.findById(userId).select("-password");
-    req.user = user;
-    next();
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log("error is protect route middleware", error.message);
-    } else {
-      console.log("error is protect route middleware", error);
-    }
-    res.status(500).json({ message: "Internal Server Errror" });
-  }
+  };
 };

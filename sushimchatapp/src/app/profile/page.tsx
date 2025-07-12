@@ -1,17 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import profileImage from "../../../public/profile.png";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Camera, Mail, Pencil, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile, updateFullName } =
-    useAuthStore();
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+  const authUser = useAuthStore((state) => state.authUser);
+  useEffect(() => {
+    checkAuth?.();
+  }, []);
+  const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth);
+  const updateProfile = useAuthStore((state) => state.updateProfile);
+  const updateFullName = useAuthStore((state) => state.updateFullName);
+  const isUpdatingProfile = useAuthStore((state) => state.isUpdatingProfile);
   const [selectedImage, setSelectedImage] = useState<
     string | ArrayBuffer | null
   >(null);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(authUser?.fullName || "");
+  const router = useRouter()
   const handleSave = async () => {
     setIsEditing(false);
     if (updateFullName) {
@@ -30,6 +39,16 @@ const ProfilePage = () => {
       // await updateProfile({ profilePic: base64Image });
     };
   };
+
+  if (isCheckingAuth)
+    return <div className="text-white p-10">Loading profile...</div>;
+  if (!authUser) {
+    router.push("/login")
+    
+    return <div className="text-white p-10">User not logged in.</div>;
+
+  }
+
   return (
     <div className="h-screen pt-20">
       <div className="max-w-2xl mx-auto p-4 py-8">

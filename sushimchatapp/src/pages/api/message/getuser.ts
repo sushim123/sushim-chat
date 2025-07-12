@@ -10,5 +10,5 @@ export default async function handler(
     res.setHeader("Allow", ["GET"]);
     return res.status(405).end(`method ${req.method} is not allowed `);
   }
-  await protectRoute(req, res, () => getUser(req, res));
+  protectRoute(getUser);
 }

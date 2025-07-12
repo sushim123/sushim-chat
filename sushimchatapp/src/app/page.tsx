@@ -1,8 +1,8 @@
 "use client";
 
-import Navbar from "@/components/NavBar";
+// import Navbar from "@/components/NavBar";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
-import Homepage from "@/components/pages/HomePage";
+import Homepage from "@/app/Homepage/page";
 import SignUpPage from "@/app/signup/page";
 import LogInPage from "@/app/login/page";
 import SettingsPage from "@/app/settings/page";
@@ -49,7 +49,7 @@ const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <Navbar />
+        
 
         <Routes>
           <Route
