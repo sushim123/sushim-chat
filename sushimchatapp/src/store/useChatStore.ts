@@ -25,7 +25,7 @@ type ChatStore = {
   sendMessage: (messageData: any) => Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
-  setSelected: (selectedUser: selectedUser | null, _id: null) => Promise<void>;
+  setSelected: (selectedUser: selectedUser | null) => Promise<void>;
   selectedUser: selectedUser | null;
 };
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -66,6 +66,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
+      if (!selectedUser?._id) {
+        console.error("❌ Selected user is missing or invalid");
+        toast.error("No user selected to send message.");
+        return;
+      }
+
       const res = await axiosInstance.post(
         `/message/send/${selectedUser?._id}`,
         messageData

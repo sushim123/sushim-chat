@@ -42,7 +42,7 @@ const ChatHeader = () => {
 
         <button
           onClick={() =>
-            setSelected({ _id: null, profilePic: "", fullName: "" }, null)
+            setSelected({ _id: null, profilePic: "", fullName: "" })
           }
         >
           <X />

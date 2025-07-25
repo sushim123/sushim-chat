@@ -33,7 +33,7 @@ const MessageInput = () => {
     try {
       await sendMessage({
         text: text.trim(),
-        image: imagePreview,
+        image: imagePreview || null,
       });
       setText("");
       setImagePreview(null);
