@@ -15,6 +15,7 @@ const ProfilePage = () => {
   const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth);
   const updateProfile = useAuthStore((state) => state.updateProfile);
   const updateFullName = useAuthStore((state) => state.updateFullName);
+  const logout = useAuthStore((state) => state.logout);
   const isUpdatingProfile = useAuthStore((state) => state.isUpdatingProfile);
   const [selectedImage, setSelectedImage] = useState<
     string | ArrayBuffer | null
@@ -40,6 +41,10 @@ const ProfilePage = () => {
       setSelectedImage(base64Image);
       // await updateProfile({ profilePic: base64Image });
     };
+  };
+  const handleLogout = () => {
+    logout;
+    router.push("/login");
   };
 
   if (isCheckingAuth)
@@ -185,6 +190,9 @@ const ProfilePage = () => {
               <div className="flex items-center justify-between py-2">
                 <span>Account Status</span>
                 <span className="text-green-500">Active</span>
+              </div>
+              <div className="text-red-500 text-xl text-center">
+                <button onClick={handleLogout}>Logout</button>
               </div>
             </div>
           </div>

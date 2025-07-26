@@ -64,10 +64,24 @@ const Sidebar = () => {
                 width={65}
               />
 
-              <div className="flex gap-2.5 h-full w-full flex-col ">
-                <h1 className="h-[27px] w-[125px] text-[20px]">
-                  {name.fullName}
-                </h1>
+              <div className="flex flex-col justify-center gap-1 w-full">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-[20px]">{name.fullName}</h1>
+                  <span className="flex items-center gap-1 text-sm text-gray-400">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        typeof name._id === "string" &&
+                        onlineUsers.includes(name._id)
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                      }`}
+                    />
+                    {typeof name._id === "string" &&
+                    onlineUsers.includes(name._id)
+                      ? "Online"
+                      : "Offline"}
+                  </span>
+                </div>
                 <p className="text-[#76767C] text-sm">
                   hello bhai kaisa hai ???
                 </p>

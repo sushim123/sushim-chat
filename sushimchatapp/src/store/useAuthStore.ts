@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { axiosInstance,  } from "@/lib/axios";
+import { axiosInstance, socketBaseURL,  } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 type onlineUsers = {
@@ -23,8 +23,8 @@ export type SignUpAndLoginData = {
 
 type useAuthStoreInstance = {
   checkAuth?: () => Promise<void>;
-  // connectSocket: () => void;
-  // disconnectSocket: () => void;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
   signup?: (data: SignUpAndLoginData) => Promise<boolean>;
   login?: (data: SignUpAndLoginData) => Promise<boolean>;
   updateProfile?: (profilePic: string) => Promise<void>;
@@ -60,7 +60,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
       console.log("checkAuth response from API:", res.data);
 
       set({ authUser: res.data });
-      // get().connectSocket();
+      get().connectSocket();
     } catch (error: any) {
       console.log("error in checkAuth function", { message: error.message });
       set({ authUser: null });
@@ -76,7 +76,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
 
       set({ authUser: res.data });
       toast.success("Account Created Successfully");
-      // get().connectSocket();
+      get().connectSocket();
       return true;
     } catch (error: any) {
       toast.error(error.response.data.message);
@@ -92,7 +92,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Login Successfully");
-      // get().connectSocket();
+      get().connectSocket();
       return true;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Login failed");
@@ -107,7 +107,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logout successfully");
-      // get().disconnectSocket();
+      get().disconnectSocket();
       set({ socket: null });
     } catch (error: any) {
       toast.error(error.response.data.message);
@@ -143,25 +143,27 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
     }
   },
 
-  // connectSocket: async () => {
-  //   const { authUser } = get();
-  //   if (!authUser || get().socket?.connected) return;
+  connectSocket: async () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
 
-  //   const socket = io(BASE_URL, {
-  //     query: {
-  //       userId: authUser._id,
-  //     },
-  //   });
-  //   socket.connect();
-  //   set({ socket: socket });
+    const socket =
+   
+    io(socketBaseURL, {
+      query: {
+        userId: authUser._id,
+      },
+    });
+    socket.connect();
+    set({ socket: socket });
 
-  //   socket.on("getOnlineUsers", (userIds) => {
-  //     set({ onlineUsers: userIds });
-  //   });
-  // },
-  // disconnectSocket: async () => {
-  //   if (get().socket.connected) {
-  //     get().socket.disconnect();
-  //   }
-  // },
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+  disconnectSocket: async () => {
+    if (get().socket.connected) {
+      get().socket.disconnect();
+    }
+  },
 }));
