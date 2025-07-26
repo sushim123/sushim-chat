@@ -20,13 +20,23 @@ const ChatMessages = () => {
       {messages?.map((message) => {
         const isSendByMe = message.senderId === authUser?._id;
         return (
-          <div 
+          <div
             key={message._id}
-            className={`w-fit max-w-[70%] text-white text-[18.2px] opacity-100 pl-4 pr-7 py-[13px] shadow-inner-custom h-full rounded-[30px] bg-custom-gradient drop-shadow-custom ${
+            className={`w-fit max-w-[70%]  text-white text-[18.2px] opacity-100 px-4 py-[13px] shadow-inner-custom rounded-[30px] bg-custom-gradient relative ${
               isSendByMe ? "self-end" : "self-start"
             }`}
           >
-            {message.text}
+            <p className="whitespace-pre-wrap  break-words leading-snug ">
+              {message.text}
+              <span className="text-[10px] text-white/50  pl-3">
+                {new Date(message.createdAt).toLocaleTimeString("en-IN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                  timeZone: "Asia/Kolkata",
+                })}
+              </span>
+            </p>
           </div>
         );
       })}
