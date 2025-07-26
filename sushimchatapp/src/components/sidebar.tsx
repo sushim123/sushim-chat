@@ -22,7 +22,7 @@ const Sidebar = () => {
   return (
     <div className="overflow-auto scroll-auto  p-8 gap-4  flex flex-col w-[400px] h-[630px] bg-linear-to-r from-black/20 to-black/20  rounded-4xl opacity-100 shadow-inner">
       <div
-        className=" p-5 justify-center w-full  h-12 flex gap-[10px] rounded-[20px] bg-[#1a1a1a]
+        className=" p-3 justify-center w-full  h-12 flex gap-[10px] rounded-[20px] bg-[#1a1a1a]
        bg-custom-gradient shadow-inner-custom drop-shadow-custom"
       >
         <input
@@ -31,7 +31,7 @@ const Sidebar = () => {
           type="text"
           placeholder="Search here........"
           className=" 
-           p-2 placeholder:text-[18.2px] w-[354.4px] h-[26] 
+           p-2 placeholder:text-[18.2px] w-full h-full 
            gap-[203px] text-start opacity-100"
         />
         {query && (

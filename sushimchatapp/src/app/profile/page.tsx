@@ -4,6 +4,7 @@ import profileImage from "../../../public/profile.png";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Camera, Mail, Pencil, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Navigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -20,7 +21,8 @@ const ProfilePage = () => {
   >(null);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(authUser?.fullName || "");
-  const router = useRouter()
+  const router = useRouter();
+
   const handleSave = async () => {
     setIsEditing(false);
     if (updateFullName) {
@@ -43,15 +45,40 @@ const ProfilePage = () => {
   if (isCheckingAuth)
     return <div className="text-white p-10">Loading profile...</div>;
   if (!authUser) {
-    router.push("/login")
-    
-    return <div className="text-white p-10">User not logged in.</div>;
+    router.push("/login");
 
+    return <div className="text-white p-10">User not logged in.</div>;
   }
 
   return (
     <div className="h-screen pt-20">
       <div className="max-w-2xl mx-auto p-4 py-8">
+        <button
+          onClick={() => {
+            router.back();
+          }}
+          className="bg-transparent text-center w-48 rounded-2xl h-14 relative text-white text-xl font-semibold group"
+          type="button"
+        >
+          <div className="bg-green-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 1024 1024"
+              height="25px"
+              width="25px"
+            >
+              <path
+                d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
+                fill="#000000"
+              ></path>
+              <path
+                d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
+                fill="#000000"
+              ></path>
+            </svg>
+          </div>
+          <p className="translate-x-2">Go Back</p>
+        </button>
         <div className="bg-base-300 rounded-xl p-6 space-y-8">
           <div className="text-center">
             <h1 className="text-2xl font-semibold ">Profile</h1>
