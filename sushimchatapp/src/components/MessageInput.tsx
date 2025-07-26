@@ -2,8 +2,10 @@ import React, { useRef, useState } from "react";
 import { useChatStore } from "@/store/useChatStore";
 import { Image, Send, Smile, X } from "lucide-react";
 import toast from "react-hot-toast";
-import EmojiPicker from "emoji-picker-react";
-
+// import EmojiPicker from "emoji-picker-react";
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+import { AnimatePresence, motion } from "framer-motion";
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -43,12 +45,17 @@ const MessageInput = () => {
     }
   };
   const handleEmojiClick = (emojiData: any) => {
-    setText((prev) => prev + emojiData.emoji);
+    setText((prev) => prev + emojiData.native);
     setShowEmojiPicker(false);
   };
 
   return (
-    <div className="p-4 w-full">
+    <motion.div
+      className="p-4 w-full relative"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0}}
+      transition={{ duration: 0.6 }}
+    >
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
@@ -82,8 +89,8 @@ const MessageInput = () => {
           <input
             type="text"
             className=" text-[#FFFFFF] placeholder:text-[#FFFFFF]/50 placeholder:text-[18.5px] w-full p-4 
-            input input-bordered rounded-2xl
-             ed-[30px] input-sm sm:input-md
+            input input-bordered 
+             rounded-[30px] input-sm sm:input-md
               bg-custom-gradient shadow-inner-custom drop-shadow-custom"
             placeholder="Type a message..."
             value={text}
@@ -97,18 +104,22 @@ const MessageInput = () => {
             onChange={handleImageChange}
           />
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 1 }}
             type="button"
             className={`hidden sm:flex btn btn-circle
                    ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
-          </button>
+          </motion.button>
         </div>
-        <button
+        <motion.button
           type="submit"
           className="btn btn-sm btn-circle text-red-500"
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 1 }}
           disabled={!text.trim() && !imagePreview}
         >
           <svg
@@ -123,14 +134,26 @@ const MessageInput = () => {
               fill="#8D8D8D"
             />
           </svg>
-        </button>
-        {showEmojiPicker && (
-          <div className="absolute top-65">
-            <EmojiPicker onEmojiClick={handleEmojiClick} />
-          </div>
-        )}
+        </motion.button>
+        <AnimatePresence>
+          {showEmojiPicker && (
+            <motion.div
+              className="absolute bottom-20 left-4 z-50"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 1 }}
+            >
+              <Picker
+                data={data}
+                onEmojiSelect={handleEmojiClick}
+                theme="dark"
+              />
+            </motion.div>
+          )}{" "}
+        </AnimatePresence>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

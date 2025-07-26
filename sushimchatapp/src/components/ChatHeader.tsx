@@ -46,7 +46,7 @@ const ChatHeader = () => {
       </div>
     </div>
   ) : (
-    <div className="text-center mt-10 text-gray-400">no selected user</div>
+    <div className="text-center mt-10 text-gray-400">Select a User First</div>
   );
 };
 export default ChatHeader;

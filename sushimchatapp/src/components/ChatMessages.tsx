@@ -15,13 +15,6 @@ const ChatMessages = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!selectedUser) {
-    return (
-      <div className="text-center text-gray-400 mt-10">
-        Select a user to start chatting
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col gap-[10px]">
       {messages?.map((message) => {

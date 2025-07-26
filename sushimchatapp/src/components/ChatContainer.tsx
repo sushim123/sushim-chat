@@ -51,12 +51,10 @@ const ChatContaineer = () => {
         </div>
 
         <div className="flex-1 overflow-auto px-4 py-2">
-          <ChatMessages/>
+          {selectedUser ? <ChatMessages /> : ""}
         </div>
 
-        <div className="shrink-0">
-          <MessageInput />
-        </div>
+        <div className="shrink-0">{selectedUser ? <MessageInput /> : ""}</div>
       </div>
     </div>
   );
