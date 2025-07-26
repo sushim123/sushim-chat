@@ -6,6 +6,7 @@ import SidebarSkeleton from "./skeleton/SidebarSkeleton";
 import { useAuthStore } from "@/store/useAuthStore";
 import profileImage from "../../public/profile.png";
 import Image from "next/image";
+import { X } from "lucide-react";
 
 const Sidebar = () => {
   const [query, setQuery] = useState("");
@@ -26,12 +27,20 @@ const Sidebar = () => {
       >
         <input
           onChange={(e) => setQuery(e.target.value.toLowerCase())}
+          value={query}
           type="text"
           placeholder="Search here........"
           className=" 
            p-2 placeholder:text-[18.2px] w-[354.4px] h-[26] 
            gap-[203px] text-start opacity-100"
-        />{" "}
+        />
+        {query && (
+          <X
+            onClick={() => {
+              setQuery("");
+            }}
+          />
+        )}
       </div>
       {users
 

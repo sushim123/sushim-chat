@@ -7,7 +7,7 @@ const ChatHeader = () => {
   const { selectedUser, setSelected } = useChatStore();
   const { onlineUsers } = useAuthStore();
 
-  return (
+  return selectedUser ? (
     <div className="p-2.5 border-b border-base-300">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -40,15 +40,13 @@ const ChatHeader = () => {
           </div>
         </div>
 
-        <button
-          onClick={() =>
-            setSelected({ _id: null, profilePic: "", fullName: "" })
-          }
-        >
+        <button onClick={() => setSelected(null)}>
           <X />
         </button>
       </div>
     </div>
+  ) : (
+    <div className="text-center mt-10 text-gray-400">no selected user</div>
   );
 };
 export default ChatHeader;

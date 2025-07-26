@@ -1,15 +1,20 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const ChatMessages = () => {
   const { selectedUser, messages, getMessages } = useChatStore();
   const { authUser } = useAuthStore();
+  const bottomRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (selectedUser?._id) {
       getMessages(selectedUser._id);
     }
   }, [selectedUser, getMessages]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   if (!selectedUser) {
     return (
       <div className="text-center text-gray-400 mt-10">
@@ -22,7 +27,7 @@ const ChatMessages = () => {
       {messages?.map((message) => {
         const isSendByMe = message.senderId === authUser?._id;
         return (
-          <div
+          <div 
             key={message._id}
             className={`w-fit max-w-[70%] text-white text-[18.2px] opacity-100 pl-4 pr-7 py-[13px] shadow-inner-custom h-full rounded-[30px] bg-custom-gradient drop-shadow-custom ${
               isSendByMe ? "self-end" : "self-start"
@@ -32,6 +37,7 @@ const ChatMessages = () => {
           </div>
         );
       })}
+      <div ref={bottomRef}></div>
     </div>
   );
 };
