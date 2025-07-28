@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import profileImage from "../../public/profile.png";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Sidebar = () => {
   const [query, setQuery] = useState("");
@@ -20,7 +21,7 @@ const Sidebar = () => {
 
   if (isUsersLoading || users.length === 0) return <SidebarSkeleton />;
   return (
-    <div className="overflow-auto scroll-auto  p-8 gap-4  flex flex-col w-[400px] h-[630px] bg-linear-to-r from-black/20 to-black/20  rounded-4xl opacity-100 shadow-inner">
+    <div className="overflow-auto scroll-auto  p-8 gap-4  flex flex-col w-[400px] h-[630px] bg-linear-to-r from-black/20 to-black/20  rounded-4xl opacity-100 shadow-inner-custom">
       <div
         className=" p-3 justify-center w-full  h-12 flex gap-[10px] rounded-[20px] bg-[#1a1a1a]
        bg-custom-gradient shadow-inner-custom drop-shadow-custom"
@@ -78,7 +79,10 @@ const Sidebar = () => {
 
         .map((name, index) => (
           <div key={index}>
-            <div
+            <motion.div
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 1.05 }}
+              drag
               onClick={() => setSelected(name)}
               className="hover:bg-gray-800 w-full gap-[15px] flex h-[91px] pl-4 py-[13px] pr-[7px] rounded-[20px] bg-gradient-to-br from-black/[0.28] to-[#818181]/0 drop-shadow-2xl shadow-black-200/30 shadow-inner-custom  "
             >
@@ -108,7 +112,7 @@ const Sidebar = () => {
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         ))}
     </div>

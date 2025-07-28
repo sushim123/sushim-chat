@@ -3,6 +3,7 @@ import Sidebar from "@/components/sidebar";
 import ChatContaineer from "@/components/ChatContainer";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { motion } from "framer-motion";
 const Homepage = () => {
   const { logout } = useAuthStore();
   const router = useRouter();
@@ -16,16 +17,19 @@ const Homepage = () => {
         <div className="flex text-[35px] justify-between ">
           <h1 className="text-[#F1F1F3] text-[35px]"> Sushim's Chat </h1>
           <div className="flex gap-6 text-white text-[18px] ">
-            <div>Settings</div>
-            <div
+            <motion.div whileHover={{ scale: 1.2 }}>Settings</motion.div>
+            <motion.div
+              whileHover={{ scale: 1.2 }}
               onClick={() => {
                 router.push("/profile");
               }}
             >
               {" "}
               Profile
-            </div>
-            <div onClick={handleLogout}>Logout</div>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.2 }} onClick={handleLogout}>
+              Logout
+            </motion.div>
           </div>
         </div>
 

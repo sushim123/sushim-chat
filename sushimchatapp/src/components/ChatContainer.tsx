@@ -44,8 +44,8 @@ const ChatContaineer = () => {
   // }
 
   return (
-    <div className=" opacity-100">
-      <div className=" flex flex-col w-[1028px] h-[630px] rounded-4xl bg-gradient-to-r from-[#000000]/20 to-[#000000]/20 shadow-inner/10">
+    <div className=" opacity-100 ">
+      <div className=" flex flex-col w-[1028px] h-[630px] rounded-4xl bg-gradient-to-r from-[#000000]/20 to-[#000000]/20 shadow-inner-custom">
         <div className="shrink-0">
           <ChatHeader />
         </div>

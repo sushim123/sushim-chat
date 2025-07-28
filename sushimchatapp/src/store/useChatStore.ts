@@ -23,6 +23,7 @@ type ChatStore = {
   isMessagesLoading: boolean;
   messages?: any[] | null | undefined;
   sendMessage: (messageData: any) => Promise<void>;
+  deleteMessage: (messageId: string)=>Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelected: (selectedUser: selectedUser | null) => Promise<void>;
@@ -79,6 +80,19 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ messages: [...(messages ?? []), res.data] });
     } catch (error: any) {
       toast.error(error.response.data.message);
+    }
+  },
+  deleteMessage: async (messageId: string) => {
+    const { messages } = get();
+    try {
+      await axiosInstance.delete(`/message/delete/${messageId}`);
+      const updatedMessages = (messages ?? []).filter(
+        (msg) => msg._id !== messageId
+      );
+      set({ messages: updatedMessages });
+      toast.success("Message deleted successfully.");
+    } catch (error: any) {
+      toast.error(error.response.data.message || "Message Not deleted");
     }
   },
 

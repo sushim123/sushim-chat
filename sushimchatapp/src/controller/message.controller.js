@@ -86,7 +86,25 @@ export const sendMessage = async (req, res) => {
 
     res.status(201).json(newMessage);
   } catch (error) {
-    console.error("❌ Error in sendMessage controller:", error); // log full error
+    console.error("❌ Error in sendMessage controller:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const deleteMessage = async (req, res) => {
+  try {
+    await mongoDB()
+    const messageId = req.query.id;
+    if (!messageId) {
+      return res.status(400).json({ error: "Message ID is required." });
+    }
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(400).json({ error: "Message Not found" });
+    }
+    await Message.findByIdAndDelete(messageId);
+    res.json({ message: "Message Delete Successfully ", status: 200 });
+  } catch (error) {
+    console.error("❌ Error in deleteMessage controller:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

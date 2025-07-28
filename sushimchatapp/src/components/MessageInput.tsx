@@ -53,7 +53,7 @@ const MessageInput = () => {
     <motion.div
       className="p-4 w-full relative"
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0}}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
       {imagePreview && (
@@ -77,13 +77,15 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 1 }}
           type="button"
           onClick={() => setShowEmojiPicker((prev) => !prev)}
           className="text-gray-500 hover:text-white"
         >
           <Smile />
-        </button>
+        </motion.button>
 
         <div className="flex-1 items-center flex gap-2">
           <input
