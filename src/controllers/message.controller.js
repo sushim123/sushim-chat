@@ -36,6 +36,7 @@ export const getMessages = async (req, res) => {
 };
 
 export const sendMessage = async (req, res) => {
+   console.log("➡️ sendMessage controller hit"); 
   try {
     const { text, image } = req.body;
     const { id: receiverId } = req.params;
