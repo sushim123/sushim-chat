@@ -36,6 +36,7 @@ type useAuthStoreInstance = {
   onlineUsers: onlineUsers[];
   isCheckingAuth: boolean;
   socket: any | null;
+  newMessage: null;
   logout: () => Promise<void>;
 };
 export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
@@ -46,6 +47,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
   onlineUsers: [],
   isCheckingAuth: true,
   socket: null,
+  newMessage: null,
 
   checkAuth: async () => {
     try {
@@ -147,23 +149,28 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket =
-   
-    io(socketBaseURL, {
-      query: {
-        userId: authUser._id,
-      },
+    const socket = io(socketBaseURL, {
+      query: { userId: authUser._id },
     });
+
     socket.connect();
-    set({ socket: socket });
+    set({ socket });
 
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
+
+    socket.on("newMessage", (newMessage) => {
+      console.log("new message recieved " ,newMessage)
+      set({ newMessage: newMessage });
+    });
   },
+
   disconnectSocket: async () => {
-    if (get().socket.connected) {
-      get().socket.disconnect();
+    const socket = get().socket;
+    if (socket?.connected) {
+      socket.disconnect();
+      set({ socket: null, newMessage: null, onlineUsers: [] });
     }
   },
 }));

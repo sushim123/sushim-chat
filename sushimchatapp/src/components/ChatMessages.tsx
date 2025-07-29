@@ -10,7 +10,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
 const ChatMessages = () => {
-  const { selectedUser, messages, getMessages, deleteMessage } = useChatStore();
+  const {
+    selectedUser,
+    messages,
+    getMessages,
+    deleteMessage,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  } = useChatStore();
   const [clickPosition, setClickPosition] = useState<{
     x: number;
     y: number;
@@ -19,8 +26,17 @@ const ChatMessages = () => {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null
   );
+  const [selectedPinMessage, setSelectedPinMessage] = useState<string | null>(
+    null
+  );
+  const [selectedSelectMessage, setSelectedSelectMessage] = useState<string[]>(
+    []
+  );
+
   const [showImage, setShowImage] = useState(false);
   const [imagePath, setImagePath] = useState<string | null>(null);
+  const { authUser, connectSocket } = useAuthStore();
+  const bottomRef = useRef<HTMLDivElement | null>(null);
   const menuItems = [
     {
       label: "Delete",
@@ -35,17 +51,17 @@ const ChatMessages = () => {
       icon: forwardIcon,
     },
     {
-      label: "Pin",
+      label: selectedPinMessage ? "Unpin" : "Pin",
       icon: pinIcon,
     },
     {
-      label: "Select",
+      label:
+        selectedMessageId && selectedSelectMessage.includes(selectedMessageId)
+          ? "DisSelect"
+          : "Select",
       icon: selectIcon,
     },
   ];
-
-  const { authUser } = useAuthStore();
-  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const handleRightClick = (e: React.MouseEvent, messageText: string) => {
     e.preventDefault();
@@ -63,12 +79,39 @@ const ChatMessages = () => {
         toast.error("Not Copied ! ");
       }
     }
-    if (label === "Delete" && selectedMessageId) {
-      try {
-        await deleteMessage(selectedMessageId);
-      } catch (error) {
-        toast.error("Not Deleted ! ");
+    if (label === "Delete") {
+      const idsToDelete =
+        selectedSelectMessage.length > 0
+          ? selectedSelectMessage
+          : selectedMessageId
+          ? [selectedMessageId]
+          : [];
+
+      for (const id of idsToDelete) {
+        try {
+          await deleteMessage(id);
+        } catch (error) {
+          toast.error("Failed to delete some messages.");
+        }
       }
+
+      setSelectedSelectMessage([]);
+    }
+    if (label === "Pin" && selectedMessage) {
+      setSelectedPinMessage(selectedMessage);
+    }
+    if (label === "Unpin" && selectedMessage) {
+      setSelectedPinMessage(null);
+    }
+    if (label === "Select" && selectedMessageId) {
+      setSelectedSelectMessage((prev) =>
+        prev.includes(selectedMessageId)
+          ? prev.filter((id) => id !== selectedMessageId)
+          : [...prev, selectedMessageId]
+      );
+    }
+    if (label === "DisSelect") {
+      setSelectedSelectMessage([]);
     }
   };
   const handleCLick = () => {
@@ -77,15 +120,53 @@ const ChatMessages = () => {
   useEffect(() => {
     if (selectedUser?._id) {
       getMessages(selectedUser._id);
+      setSelectedPinMessage(null);
+      setClickPosition(null);
+      setSelectedSelectMessage([]);
     }
   }, [selectedUser, getMessages]);
   useEffect(() => {
+    if (authUser) {
+      connectSocket();
+    }
+  }, [authUser]);
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  useEffect(() => {
+    subscribeToMessages();
+    return () => {
+      unsubscribeFromMessages();
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-[10px]">
+      {selectedSelectMessage.length > 0 && (
+        <div className="h-[91px] items-center justify-between flex w-full text-white text-[18.2px] opacity-100 py-[20px] px-[13px] shadow-inner-custom rounded-[20px] bg-custom-gradient relative">
+          <div>{selectedSelectMessage.length} selected</div>
+          <div className="flex justify-start gap-12">
+            {menuItems.map((item) => (
+              <div
+                key={item.label}
+                onClick={() => handleMenuItemClick(item.label)}
+                className="cursor-pointer"
+              >
+                <img src={item.icon.src} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {selectedPinMessage && (
+        <div className="h-10 w-full bg-gray-600 items-center justify-center flex">
+          <h1>{selectedPinMessage}</h1>
+        </div>
+      )}
+
       {messages?.map((message) => {
+        const isSelected = selectedSelectMessage.includes(message._id);
         const isSendByMe = message.senderId === authUser?._id;
         return (
           <div
@@ -96,7 +177,7 @@ const ChatMessages = () => {
             key={message._id}
             className={`w-fit max-w-[70%]  text-white text-[18.2px] opacity-100 px-4 py-[13px] shadow-inner-custom rounded-[30px] bg-custom-gradient relative ${
               isSendByMe ? "self-end" : "self-start"
-            }`}
+            } ${isSelected ? "border-2 border-blue-400" : ""}`}
           >
             <p className="whitespace-pre-wrap  break-words leading-snug ">
               {message.text ||
@@ -110,6 +191,7 @@ const ChatMessages = () => {
                     src={message.image}
                   />
                 ))}
+
               <span className="text-[10px] text-white/50  pl-3">
                 {new Date(message.createdAt).toLocaleTimeString("en-IN", {
                   hour: "2-digit",

@@ -15,7 +15,7 @@ export const protectRoute = (
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       await mongoDB();
-console.log("JWT Cookie:", req.cookies.jwt);
+
       const token = req.cookies?.jwt;
       if (!token) {
         return res.status(401).json({ message: "Unauthorized: No token" });
@@ -23,10 +23,9 @@ console.log("JWT Cookie:", req.cookies.jwt);
 
       const jwtSecret = process.env.JWT_SECRET!;
       const decoded = jwt.verify(token, jwtSecret);
-  console.log("Decoded:", decoded);
+
       const userId = (decoded as jwt.JwtPayload).userId;
       const user = await User.findById(userId).select("-password");
- console.log("Found user:", user);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });

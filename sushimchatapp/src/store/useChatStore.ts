@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
+import axios, { AxiosError } from "axios";
 
 interface selectedUser {
   _id: null;
@@ -23,7 +24,7 @@ type ChatStore = {
   isMessagesLoading: boolean;
   messages?: any[] | null | undefined;
   sendMessage: (messageData: any) => Promise<void>;
-  deleteMessage: (messageId: string)=>Promise<void>;
+  deleteMessage: (messageId: string) => Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelected: (selectedUser: selectedUser | null) => Promise<void>;
@@ -73,15 +74,38 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         return;
       }
 
-      const res = await axiosInstance.post(
-        `/message/send/${selectedUser?._id}`,
-        messageData
-      );
+      const url1 = `https://sushim-chat.onrender.com/api/message/send/${selectedUser._id}`;
+      const url2 = `/api/message/send/${selectedUser._id}`;
+
+      let res;
+
+      try {
+        res = await axios.post(url1, messageData, {
+          withCredentials: true,
+        });
+      } catch (err) {
+        const AxiosError = err as AxiosError;
+        if (
+          AxiosError.code === "ECONNREFUSED" ||
+          AxiosError.response === undefined
+        ) {
+          console.warn("Primary backend unreachable, trying fallback...");
+
+          res = await axios.post(url2, messageData, {
+            withCredentials: true,
+          });
+        } else {
+          throw err;
+        }
+      }
+
       set({ messages: [...(messages ?? []), res.data] });
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to send message.");
+      console.error("Send message error:", error.message);
     }
   },
+
   deleteMessage: async (messageId: string) => {
     const { messages } = get();
     try {

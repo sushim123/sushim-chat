@@ -82,7 +82,6 @@ const Sidebar = () => {
             <motion.div
               whileHover={{ scale: 1.07 }}
               whileTap={{ scale: 1.05 }}
-              drag
               onClick={() => setSelected(name)}
               className="hover:bg-gray-800 w-full gap-[15px] flex h-[91px] pl-4 py-[13px] pr-[7px] rounded-[20px] bg-gradient-to-br from-black/[0.28] to-[#818181]/0 drop-shadow-2xl shadow-black-200/30 shadow-inner-custom  "
             >
