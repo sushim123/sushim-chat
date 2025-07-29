@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { axiosInstance, socketBaseURL } from "../lib/axios.js";
+import { axiosInstance, baseURL } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
-const BASE_URL = socketBaseURL;
+const BASE_URL = baseURL;
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -61,7 +61,7 @@ export const useAuthStore = create((set, get) => ({
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logout successfully");
-      get().disconnectSocket();
+      get().discconnectSocket();
       set({ socket: null });
     } catch (error) {
       toast.error(error.response.data.message);
@@ -113,7 +113,7 @@ export const useAuthStore = create((set, get) => ({
       set({ onlineUsers: userIds });
     });
   },
-  disconnectSocket: async () => {
+  discconnectSocket: async () => {
     if (get().socket.connected) {
       get().socket.disconnect();
     }
