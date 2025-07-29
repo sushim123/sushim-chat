@@ -3,7 +3,6 @@ import { useChatStore } from "../store/useChatStore";
 import SidebarSkeleton from "../components/skeleton/SidebarSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import { Users } from "lucide-react";
-import profileImage from "../assets/profile.png";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelected, isUsersLoading } =
@@ -40,7 +39,7 @@ const Sidebar = () => {
           >
             <div className="relative mx-auto lg:mx-0">
               <img
-                src={user.profilePic || profileImage}
+                src={user.profilePic || "src/assets/profile.png"}
                 alt={user.name}
                 className="size-12 object-cover rounded-full"
               />
