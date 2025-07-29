@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import profilePng from "../../public/profile.png";
 import ChatMessages from "./ChatMessages";
 
-const ChatContaineer = () => {
+const ChatContaineer = ({ goBack }: { goBack: () => void }) => {
   const { authUser } = useAuthStore();
   const {
     messages,
@@ -44,8 +44,16 @@ const ChatContaineer = () => {
   // }
 
   return (
-    <div className=" opacity-100 ">
-      <div className=" flex flex-col w-[1028px] h-[630px] rounded-4xl bg-gradient-to-r from-[#000000]/20 to-[#000000]/20 shadow-inner-custom">
+    <div className="opacity-100 ">
+      <div className="w-full">
+        <div
+          className="md:hidden text-white p-2 cursor-pointer"
+          onClick={goBack}
+        >
+          ← Back
+        </div>
+      </div>
+      <div className=" flex flex-col sm:w-[1028px] w-[400px] h-[710px] sm:h-[630px] rounded-4xl bg-gradient-to-r from-[#000000]/20 to-[#000000]/20 shadow-inner-custom">
         <div className="shrink-0">
           <ChatHeader />
         </div>

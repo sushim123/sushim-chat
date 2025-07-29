@@ -9,7 +9,7 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Sidebar = () => {
+const Sidebar = ({onChatSelect}:{onChatSelect:()=>void}) => {
   const [query, setQuery] = useState("");
   const { getUsers, users, selectedUser, setSelected, isUsersLoading } =
     useChatStore();
@@ -21,7 +21,7 @@ const Sidebar = () => {
 
   if (isUsersLoading || users.length === 0) return <SidebarSkeleton />;
   return (
-    <div className="overflow-auto scroll-auto  p-8 gap-4  flex flex-col w-[400px] h-[630px] bg-linear-to-r from-black/20 to-black/20  rounded-4xl opacity-100 shadow-inner-custom">
+    <div className="  overflow-auto scroll-auto  p-8 gap-4 flex flex-col w-[400px] sm:h-[630px] h-[750px] bg-linear-to-r from-black/20 to-black/20  rounded-4xl opacity-100 shadow-inner-custom">
       <div
         className=" p-3 justify-center w-full  h-12 flex gap-[10px] rounded-[20px] bg-[#1a1a1a]
        bg-custom-gradient shadow-inner-custom drop-shadow-custom"
@@ -93,7 +93,7 @@ const Sidebar = () => {
                 width={65}
               />
 
-              <div className="flex flex-col justify-center gap-1 w-full">
+              <div onClick={onChatSelect} className="flex flex-col justify-center gap-1 w-full">
                 <div className="flex items-center gap-3">
                   <h1 className="text-[20px]">{name.fullName}</h1>
                 </div>
