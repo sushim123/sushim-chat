@@ -1,15 +1,13 @@
 import React, { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, Smile, X } from "lucide-react";
+import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
-import EmojiPicker from "emoji-picker-react";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
-  const [showEmojiPicker, setShowEmojiPicker] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -42,10 +40,6 @@ const MessageInput = () => {
       console.error("Failed to send mesage", error);
     }
   };
-  const handleEmojiClick = (emojiData) => {
-    setText((prev) => prev + emojiData.emoji);
-    setShowEmojiPicker(false);
-  };
 
   return (
     <div className="p-4 w-full">
@@ -70,14 +64,6 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setShowEmojiPicker((prev) => !prev)}
-          className="text-gray-500 hover:text-white"
-        >
-          <Smile />
-        </button>
-
         <div className="flex-1 flex gap-2">
           <input
             type="text"
@@ -110,11 +96,6 @@ const MessageInput = () => {
         >
           <Send size={22} />
         </button>
-        {showEmojiPicker && (
-          <div className="absolute top-65">
-            <EmojiPicker  onEmojiClick={handleEmojiClick} />
-          </div>
-        )}
       </form>
     </div>
   );
