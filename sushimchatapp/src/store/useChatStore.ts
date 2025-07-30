@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import { axiosInstance } from "../lib/axios";
-import { useAuthStore } from "./useAuthStore";
+import { axiosInstance } from "../lib/axios"; // Assuming axiosInstance is configured for auth
+import { useAuthStore } from "./useAuthStore"; // To get the JWT token and socket instance
 import axios, { AxiosError } from "axios";
 
 interface selectedUser {
-  _id: null;
+  _id: string | null; // Changed to string as _id is typically a string
   profilePic: string;
   fullName: string;
 }
@@ -13,7 +13,7 @@ interface selectedUser {
 interface User {
   profilePic: string;
   name: string;
-  _id: null;
+  _id: string | null; // Changed to string
   fullName: string;
 }
 type ChatStore = {
@@ -40,13 +40,15 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
+      // axiosInstance should be configured with an interceptor to add the Authorization header
       const res = await axiosInstance.get("/message/getuser");
-
       set({ users: res.data });
-
       toast.success("All users are loaded successfully");
     } catch (error) {
-      toast.error((error as any).response.data.message);
+      toast.error(
+        (error as any).response?.data?.message || "Failed to load users."
+      );
+      console.error("Get users error:", error);
     } finally {
       set({ isUsersLoading: false });
     }
@@ -55,11 +57,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
+      // axiosInstance should be configured with an interceptor to add the Authorization header
       const res = await axiosInstance.get(`/message/${userId}`);
       set({ messages: res.data });
-      toast.success("Message Loaded succesfully");
+      toast.success("Message Loaded successfully");
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to load messages.");
+      console.error("Get messages error:", error);
     } finally {
       set({ isMessagesLoading: false });
     }
@@ -74,33 +78,44 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         return;
       }
 
-      const url1 = `https://sushim-chat.onrender.com/api/message/send/${selectedUser._id}`;
-      const url2 = `/api/message/send/${selectedUser._id}`;
+      // Get the token from useAuthStore (assuming it's stored there after login)
+      const authState = useAuthStore.getState();
+      const token = authState.token; // Assuming 'token' is the JWT in your auth store
+
+      if (!token) {
+        console.error("❌ Authentication token not found in auth store.");
+        toast.error("Authentication required. Please log in.");
+        return;
+      }
+
+      const url = `https://sushim-chat.onrender.com/api/message/send/${selectedUser._id}`;
 
       let res;
-
       try {
-        res = await axios.post(url1, messageData, {
-          withCredentials: true,
+        res = await axios.post(url, messageData, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Send JWT in Authorization header
+          },
+          // withCredentials is NOT needed when sending token in Authorization header
+          // withCredentials: true,
         });
       } catch (err) {
+        // Removed the fallback to url2 as it's incorrect for production deployment
         const AxiosError = err as AxiosError;
-        if (
-          AxiosError.code === "ECONNREFUSED" ||
-          AxiosError.response === undefined
-        ) {
-          console.warn("Primary backend unreachable, trying fallback...");
-
-          res = await axios.post(url2, messageData, {
-            withCredentials: true,
-          });
-        } else {
-          throw err;
-        }
+        toast.error("Failed to send message.");
+        console.error(
+          "Send message Axios error:",
+          AxiosError.message,
+          AxiosError.response?.data
+        );
+        throw err; // Re-throw to be caught by outer catch
       }
 
       set({ messages: [...(messages ?? []), res.data] });
+      toast.success("Message sent!"); // Add success toast for clarity
     } catch (error: any) {
+      // This catch will handle errors from token absence or the axios.post itself
       toast.error(error.response?.data?.message || "Failed to send message.");
       console.error("Send message error:", error.message);
     }
@@ -109,6 +124,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   deleteMessage: async (messageId: string) => {
     const { messages } = get();
     try {
+      // axiosInstance should be configured with an interceptor to add the Authorization header
       await axiosInstance.delete(`/message/delete/${messageId}`);
       const updatedMessages = (messages ?? []).filter(
         (msg) => msg._id !== messageId
@@ -116,36 +132,45 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ messages: updatedMessages });
       toast.success("Message deleted successfully.");
     } catch (error: any) {
-      toast.error(error.response.data.message || "Message Not deleted");
+      toast.error(error.response?.data?.message || "Message Not deleted");
+      console.error("Delete message error:", error);
     }
   },
 
   subscribeToMessages: () => {
     const socket = (useAuthStore.getState() as { socket: any }).socket;
-    if (!socket) return;
+    if (!socket) {
+      console.warn("Socket.IO client not initialized in useAuthStore.");
+      return;
+    }
 
-    socket.off("newMessage");
+    socket.off("newMessage"); // Ensure no duplicate listeners
 
-    socket.on("newMessage", (newMessage: string) => {
+    socket.on("newMessage", (newMessage: any) => {
+      // Type as any for flexibility
       const current = get().messages;
-      console.log("new message recived:", newMessage); // 🔍 Check this
+      console.log("new message received:", newMessage); // 🔍 Check this in browser console
       set({ messages: [...(current ?? []), newMessage] });
     });
   },
 
   unsubscribeFromMessages: () => {
     const socket = (useAuthStore.getState() as { socket: any }).socket;
-    socket.off("newMessage");
+    if (socket) {
+      socket.off("newMessage");
+    }
   },
 
   setSelected: async (selectedUser) => {
     if (selectedUser) {
       set({ selectedUser });
-      if (selectedUser._id && selectedUser.profilePic) {
+      if (selectedUser._id) {
+        // profilePic check is not strictly needed for getMessages
         await get().getMessages(selectedUser._id);
       }
     } else {
       set({ selectedUser: null });
+      set({ messages: [] }); // Clear messages when no user is selected
     }
   },
 }));
