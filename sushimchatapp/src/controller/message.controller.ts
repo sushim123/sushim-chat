@@ -2,9 +2,10 @@ import User from "@/modules/user.model";
 import { mongoDB } from "@/lib/db";
 import Message from "@/modules/message.model";
 import cloudinary from "@/lib/cloudinary";
-import { getReceiverSocketId } from "@/lib/socket";
+import { io, getReceiverSocketId } from "@/lib/socket";
+import { NextApiRequest, NextApiResponse } from "next/types";
 
-export const getUser = async (req, res) => {
+export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     mongoDB();
 
@@ -19,21 +20,36 @@ export const getUser = async (req, res) => {
 
     console.log(users);
     res.status(200).json(users);
-  } catch (error) {
-    console.error("Error in getUsersForSidebar:", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in getUsersForSidebar:", error.message);
+    } else {
+      console.error("getUsersForSidebar:", error);
+    }
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const getSecondUser = async (req, res) => {
+export const getSecondUser = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
     const users = await User.find();
     res.json(users);
-  } catch (error) {
-    res.status(500).json({ Message: "Internal Server error" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({ Message: "Internal Server error" });
+    } else {
+      console.error("Internal Server error:", error);
+    }
   }
 };
-export const getMessages = async (req, res) => {
+export const getMessages = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
     const { id: receiverId } = req.query;
     const myId = req.user._id;
@@ -45,13 +61,20 @@ export const getMessages = async (req, res) => {
       ],
     });
     res.status(200).json(message);
-  } catch (error) {
-    console.log("Error in getMessages function", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log("Error in getMessages function", error.message);
+    } else {
+      console.error("Unknown error in getMessages:", error);
+    }
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export const sendMessage = async (req, res) => {
+export const sendMessage = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
     const { text, image } = req.body;
     const receiverId = Array.isArray(req.query.id)
@@ -85,14 +108,21 @@ export const sendMessage = async (req, res) => {
     }
 
     res.status(201).json(newMessage);
-  } catch (error) {
-    console.error("❌ Error in sendMessage controller:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("❌ Error in sendMessage controller:", error);
+    } else {
+      console.error("Unknown error in sendMessage:", error);
+    }
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-export const deleteMessage = async (req, res) => {
+export const deleteMessage = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
-    await mongoDB()
+    await mongoDB();
     const messageId = req.query.id;
     if (!messageId) {
       return res.status(400).json({ error: "Message ID is required." });
@@ -103,8 +133,12 @@ export const deleteMessage = async (req, res) => {
     }
     await Message.findByIdAndDelete(messageId);
     res.json({ message: "Message Delete Successfully ", status: 200 });
-  } catch (error) {
-    console.error("❌ Error in deleteMessage controller:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("❌ Error in deleteMessage controller:", error);
+    } else {
+      console.error("Unknown error in deleteMessage:", error);
+    }
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
