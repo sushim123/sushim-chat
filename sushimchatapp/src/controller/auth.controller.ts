@@ -1,10 +1,11 @@
 import User from "../modules/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
-import generateToken from "../lib/utils.ts";
+import generateToken from "../lib/utils";
 import { mongoDB } from "../lib/db.js";
+import { NextApiRequest, NextApiResponse } from "next/types.js";
 
-export const signup = async (req, res) => {
+export const signup = async (req: NextApiRequest, res: NextApiResponse) => {
   await mongoDB();
 
   if (req.method !== "POST") {
@@ -40,13 +41,17 @@ export const signup = async (req, res) => {
       fullName: newUser.fullName,
       _id: newUser._id,
     });
-  } catch (error) {
-    console.error("Error in signup:", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in signup:", error.message);
+    } else {
+      console.error("Unknown error in signup:", error);
+    }
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const login = async (req, res) => {
+export const login = async (req: NextApiRequest, res: NextApiResponse) => {
   const { email, password } = req.body;
   console.log(req.body);
   try {
@@ -66,12 +71,16 @@ export const login = async (req, res) => {
       // password: user.password,
     });
     console.log("login successful");
-  } catch (error) {
-    console.error("Error in login", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in login", error.message);
+    } else {
+      console.error("unknown error in login");
+    }
     res.status(500).json({ message: "internal server error" });
   }
 };
-export const logout = async (req, res) => {
+export const logout = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     res.setHeader(
       "Set-Cookie",
@@ -79,12 +88,19 @@ export const logout = async (req, res) => {
     );
     res.status(200).json({ message: "Logged out successfully" });
     console.log("Logged out successfully");
-  } catch (error) {
-    console.error("Error in Logging Out controller", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in Logging Out controller", error.message);
+    } else {
+      console.error("Unknown error in Logout:", error);
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 };
-export const updateProfile = async (req, res) => {
+export const updateProfile = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
     const { profilePic } = req.body;
     const userId = req.user._id;
@@ -98,13 +114,20 @@ export const updateProfile = async (req, res) => {
       { new: true }
     ).lean();
     res.status(200).json(updatedUser);
-  } catch (error) {
-    console.log("error in updating profile pic", error.message);
-    res.status(500).json({ message: "internal server error" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in Update profile Out controller", error.message);
+    } else {
+      console.error("Unknown error in Update profile:", error);
+    }
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const updateFullName = async (req, res) => {
+export const updateFullName = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
     const { fullName } = req.body;
     const userId = req.user._id;
@@ -118,12 +141,16 @@ export const updateFullName = async (req, res) => {
     );
     console.log(updatedUser);
     res.status(200).json(updatedUser);
-  } catch (error) {
-    console.log("error in updating fullname", error.message);
-    res.status(500).json({ message: "internal server error" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in updateFullName  controller", error.message);
+    } else {
+      console.error("Unknown error in updateFullName:", error);
+    }
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-export const checkAuth = async (req, res) => {
+export const checkAuth = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     res.setHeader("Cache-Control", "no-store");
     return res.status(200).json(req.user);
