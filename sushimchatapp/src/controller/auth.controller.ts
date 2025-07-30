@@ -1,8 +1,8 @@
-import User from "../modules/user.model.js";
+import User from "../modules/user.model";
 import bcrypt from "bcryptjs";
-import cloudinary from "../lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary";
 import generateToken from "../lib/utils";
-import { mongoDB } from "../lib/db.js";
+import { mongoDB } from "../lib/db";
 import { NextApiRequest, NextApiResponse } from "next/types.js";
 
 export const signup = async (req: NextApiRequest, res: NextApiResponse) => {
