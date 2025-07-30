@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/sidebar.tsx", "src/middleware/auth.middleware.ts", "src/lib/db.js", "src/controller/auth.controller.js", "src/pages/api/auth/getuser.ts", "src/controller/message.controller.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/sidebar.tsx", "src/middleware/auth.middleware.ts", "src/lib/db.js", "src/controller/auth.controller.ts", "src/pages/api/auth/getuser.ts", "src/controller/message.controller.js"],
   "exclude": ["node_modules"]
 }
