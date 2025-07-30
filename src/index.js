@@ -16,13 +16,15 @@ app.use(
   cors({
     origin: [
       "https://sushim-chat.vercel.app",
+      "https://3bab4269511e.ngrok-free.app",
       "http://localhost:5173",
       "http://localhost:3000",
     ],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.options("*", cors());
+
 app.use("/api/auth", router);
 app.use("/api/message", messageRoutes);
 
