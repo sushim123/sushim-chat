@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import * as cookie from "cookie"; // ✅ use `* as cookie` to avoid ambiguity
+import * as cookie from "cookie";
 
 const generateToken = (userId: string, res: any) => {
   const JWT_SECRET = process.env.JWT_SECRET;
@@ -14,7 +14,7 @@ const generateToken = (userId: string, res: any) => {
   const serializedCookie = cookie.serialize("jwt", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "none", 
     maxAge: 7 * 24 * 60 * 60,
     path: "/",
   });
