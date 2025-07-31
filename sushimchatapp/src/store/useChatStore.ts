@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import { axiosInstance } from "../lib/axios"; // Assuming axiosInstance is configured for auth
+import { axiosInstance, socketBaseURL } from "../lib/axios"; // Assuming axiosInstance is configured for auth
 import { useAuthStore } from "./useAuthStore"; // To get the JWT token and socket instance
 import axios, { AxiosError } from "axios";
 
@@ -80,7 +80,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
       // Get the token from useAuthStore (assuming it's stored there after login)
       const authState = useAuthStore.getState();
-      const token = authState.token; // Assuming 'token' is the JWT in your auth store
+      const token = authState.token;
 
       if (!token) {
         console.error("❌ Authentication token not found in auth store.");
@@ -88,7 +88,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         return;
       }
 
-      const url = `https://sushim-chat.onrender.com/api/message/send/${selectedUser._id}`;
+      const url = `${socketBaseURL}/api/message/send/${selectedUser._id}`;
 
       let res;
       try {
@@ -97,11 +97,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`, // Send JWT in Authorization header
           },
-          // withCredentials is NOT needed when sending token in Authorization header
-          // withCredentials: true,
+         
         });
       } catch (err) {
-        // Removed the fallback to url2 as it's incorrect for production deployment
         const AxiosError = err as AxiosError;
         toast.error("Failed to send message.");
         console.error(

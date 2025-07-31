@@ -17,7 +17,7 @@ const generateToken = (userId: string, res: any): string => {
     cookie.serialize("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none", 
+      sameSite: "lax", 
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
     })
