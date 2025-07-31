@@ -1,20 +1,19 @@
 import { create } from "zustand";
-import { axiosInstance, socketBaseURL } from "@/lib/axios"; // Assuming socketBaseURL is correctly defined here
+import { axiosInstance, socketBaseURL } from "@/lib/axios"; 
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 type onlineUsers = {
   userIds: string[];
-  selectedUser: { id: string }; // This type seems inconsistent with onlineUsers being just string[]
-};
-
+  selectedUser: { id: string }; 
+}
 type AuthUser = {
   _id: string;
   fullName: string;
   profilePic: string;
   email: string;
   createdAt: Date;
-  token?: string; // Added token to AuthUser type
+  token?: string; 
 };
 
 export type SignUpAndLoginData = {
@@ -32,20 +31,20 @@ type useAuthStoreInstance = {
   updateProfile?: (profilePic: string) => Promise<void>;
   updateFullName?: (fullName: string) => Promise<void> | undefined;
   authUser: AuthUser | null;
-  token: string | null; // Explicitly added token to state
+  token: string | null; 
   isSigningUp: boolean;
   isloggingIn: boolean;
   isUpdatingProfile: boolean;
-  onlineUsers: string[]; // Changed to string[] as per your socket.on("getOnlineUsers")
+  onlineUsers: string[]; 
   isCheckingAuth: boolean;
   socket: any | null;
-  newMessage: any | null; // Changed to any for flexibility
+  newMessage: any | null; 
   logout: () => Promise<void>;
 };
 
 export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
   authUser: null,
-  token: null, // Initialize token as null
+  token: null,
   isSigningUp: false,
   isloggingIn: false,
   isUpdatingProfile: false,
@@ -55,26 +54,20 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
   newMessage: null,
 
   checkAuth: async () => {
-    set({ isCheckingAuth: true }); // Ensure loading state is set
+    set({ isCheckingAuth: true }); 
     try {
-      // axiosInstance should have an interceptor to add the Authorization header
-      // If the backend sends the token in a cookie, axiosInstance might need withCredentials: true
-      // but for Authorization header strategy, it's generally not needed for axiosInstance itself
       const res = await axiosInstance.get("/auth/check", {
-        // withCredentials: true, // Remove if axiosInstance interceptor handles auth
         headers: {
           Accept: "application/json",
           "Cache-Control": "no-store",
         },
       });
       console.log("checkAuth response from API:", res.data);
-
-      // Assuming res.data contains the user object and potentially a new token
-      set({ authUser: res.data, token: res.data.token || null }); // Store token from response
+      set({ authUser: res.data, token: res.data.token || null });
       get().connectSocket();
     } catch (error: any) {
       console.log("error in checkAuth function", { message: error.message });
-      set({ authUser: null, token: null }); // Clear authUser and token on error
+      set({ authUser: null, token: null });
     } finally {
       set({ isCheckingAuth: false });
     }
@@ -84,8 +77,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      // Assuming res.data contains the user object and the JWT token
-      set({ authUser: res.data, token: res.data.token }); // Store authUser and token
+      set({ authUser: res.data, token: res.data.token });
       toast.success("Account Created Successfully");
       get().connectSocket();
       return true;
@@ -101,8 +93,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
     set({ isloggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
-      // Assuming res.data contains the user object and the JWT token
-      set({ authUser: res.data, token: res.data.token }); // Store authUser and token
+      set({ authUser: res.data, token: res.data.token }); 
       toast.success("Login Successfully");
       get().connectSocket();
       return true;
@@ -116,9 +107,8 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
 
   logout: async () => {
     try {
-      // axiosInstance should have an interceptor to add the Authorization header
       await axiosInstance.post("/auth/logout");
-      set({ authUser: null, token: null }); // Clear authUser and token
+      set({ authUser: null, token: null });
       toast.success("Logout successfully");
       get().disconnectSocket();
       set({ socket: null });
@@ -131,7 +121,7 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
     try {
-      // axiosInstance should have an interceptor to add the Authorization header
+    
       const res = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
       toast.success("Profile Pic Updated Successfully");
@@ -149,7 +139,6 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
   updateFullName: async (data) => {
     set({ isUpdatingProfile: true });
     try {
-      // axiosInstance should have an interceptor to add the Authorization header
       const res = await axiosInstance.put("/auth/update-fullname", data);
       set({ authUser: res.data });
       toast.success("Full Name updated Successfully");
@@ -165,24 +154,16 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
 
   connectSocket: () => {
     const { authUser, socket } = get();
-    // Only connect if authUser exists and socket is not already connected
     if (!authUser || socket?.connected) {
       console.log(
         "Socket connection skipped: No authUser or already connected."
       );
       return;
     }
-
-    // Ensure socketBaseURL points to your Render backend's Socket.IO server (e.g., 'https://sushim-chat.onrender.com')
     const newSocket = io(socketBaseURL, {
       query: { userId: authUser._id },
-      // If your Socket.IO handshake requires the JWT token, you might need to add it here:
-      // auth: { token: get().token },
-      // Or if it relies on cookies for handshake:
-      // withCredentials: true,
     });
-
-    newSocket.connect(); // Explicitly connect the socket
+    newSocket.connect();
     set({ socket: newSocket });
 
     newSocket.on("getOnlineUsers", (userIds: string[]) => {
@@ -201,7 +182,6 @@ export const useAuthStore = create<useAuthStoreInstance>((set, get) => ({
 
     newSocket.on("disconnect", (reason: string) => {
       console.log("Socket.IO disconnected:", reason);
-      // You might want to handle reconnection logic here if needed
     });
 
     newSocket.on("connect_error", (err: Error) => {

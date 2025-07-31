@@ -1,15 +1,13 @@
-// In your Next.js project: pages/api/auth/signup.ts, pages/api/auth/login.ts, pages/api/auth/logout.ts
-// Or app/api/auth/signup/route.ts, etc.
 
 import User from "../modules/user.model";
 import bcrypt from "bcryptjs";
-import cloudinary from "../lib/cloudinary"; // Assuming this is correct path
-import generateToken from "../lib/utils"; // Your generateToken utility
-import { mongoDB } from "../lib/db"; // Assuming this is correct path
+import cloudinary from "../lib/cloudinary";
+import generateToken from "../lib/utils"; 
+import { mongoDB } from "../lib/db"; 
 import { NextApiRequest, NextApiResponse } from "next/types.js";
 
 export const signup = async (req: NextApiRequest, res: NextApiResponse) => {
-  await mongoDB(); // Ensure DB connection
+  await mongoDB(); 
 
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method Not Allowed" });
@@ -39,18 +37,15 @@ export const signup = async (req: NextApiRequest, res: NextApiResponse) => {
     });
     await newUser.save();
 
-    // Generate token and set cookie
-    const token = generateToken(newUser._id, res); // Get the token value
+    const token = generateToken(newUser._id, res); 
 
     console.log("User created:", newUser);
-
-    // Return user data AND the token in the JSON response
     return res.status(201).json({
       _id: newUser._id,
       email: newUser.email,
       fullName: newUser.fullName,
-      profilePic: newUser.profilePic, // Include profilePic if available in User model
-      token: token, // <-- CRITICAL: Send token in response body for Zustand store
+      profilePic: newUser.profilePic,
+      token: token,
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -63,7 +58,7 @@ export const signup = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export const login = async (req: NextApiRequest, res: NextApiResponse) => {
-  await mongoDB(); // Ensure DB connection
+  await mongoDB(); 
   const { email, password } = req.body;
   console.log(req.body);
   try {
@@ -75,17 +70,13 @@ export const login = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
-
-    // Generate token and set cookie
-    const token = generateToken(user._id, res); // Get the token value
-
-    // Return user data AND the token in the JSON response
+    const token = generateToken(user._id, res);
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
-      profilePic: user.profilePic, // Include profilePic if available in User model
-      token: token, // <-- CRITICAL: Send token in response body for Zustand store
+      profilePic: user.profilePic, 
+      token: token, 
     });
     console.log("login successful");
   } catch (error: unknown) {
@@ -100,10 +91,10 @@ export const login = async (req: NextApiRequest, res: NextApiResponse) => {
 
 export const logout = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    // Clear the JWT cookie with appropriate SameSite and Secure flags
+   
     res.setHeader(
       "Set-Cookie",
-      `jwt=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure` // <-- Use SameSite=None; Secure for consistency
+      `jwt=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure`
     );
     res.status(200).json({ message: "Logged out successfully" });
     console.log("Logged out successfully");
@@ -121,10 +112,10 @@ export const updateProfile = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  await mongoDB(); // Ensure DB connection
+  await mongoDB(); 
   try {
     const { profilePic } = req.body;
-    const userId = (req as any).user._id; // Cast req to any to access req.user
+    const userId = (req as any).user._id; 
     if (!profilePic) {
       return res.status(400).json({ message: "profile pic is required" });
     }
@@ -149,10 +140,10 @@ export const updateFullName = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  await mongoDB(); // Ensure DB connection
+  await mongoDB();
   try {
     const { fullName } = req.body;
-    const userId = (req as any).user._id; // Cast req to any to access req.user
+    const userId = (req as any).user._id;
     if (!fullName) {
       return res.status(400).json({ message: "fullName is required" });
     }
@@ -174,14 +165,18 @@ export const updateFullName = async (
 };
 
 export const checkAuth = async (req: NextApiRequest, res: NextApiResponse) => {
-  await mongoDB(); // Ensure DB connection
+  await mongoDB();
   try {
     res.setHeader("Cache-Control", "no-store");
-    // Assuming req.user is populated by a middleware that verifies the JWT cookie
-    // If you want to return the token here, you'd need to re-generate it or store it on req.user
-    // For now, let's assume req.user is enough for checkAuth, but if useAuthStore needs token,
-    // you might need to adjust this.
-    return res.status(200).json((req as any).user); // Cast req to any to access req.user
+    const authenticatuser = (req as any).user;
+    const newToken = generateToken(authenticatuser._id, res);
+    return res.status(200).json({
+      _id: authenticatuser._id,
+      fullName: authenticatuser.fullName,
+      email: authenticatuser.email,
+      profilePic: authenticatuser.profilePic,
+      token: newToken,
+    }); 
   } catch (error) {
     console.error("error in checkAuth controller", error);
     return res.status(500).json({ message: "internal server error" });
