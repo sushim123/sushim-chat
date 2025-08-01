@@ -46,7 +46,7 @@ const MessageInput = () => {
   };
   const handleEmojiClick = (emojiData: any) => {
     setText((prev) => prev + emojiData.native);
-    setShowEmojiPicker(false);
+
   };
 
   return (
