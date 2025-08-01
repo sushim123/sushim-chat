@@ -10,7 +10,7 @@ const Homepage = () => {
   const { logout } = useAuthStore();
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const [activeChat, setActiveChat] = useState(false); 
+  const [activeChat, setActiveChat] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -28,8 +28,8 @@ const Homepage = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-[#1D1C1C]">
-      <div className="flex justify-between items-center p-6">
+    <div className="h-full w-full bg-[#1D1C1C]">
+      <div className="flex sm:flex-row flex-col gap-2 justify-between items-center p-6">
         <h1 className="text-[#F1F1F3] text-[35px]">Sushim's Chat</h1>
         <div className="flex gap-6 text-white text-[18px]">
           <motion.div whileHover={{ scale: 1.2 }}>Settings</motion.div>
@@ -42,7 +42,7 @@ const Homepage = () => {
         </div>
       </div>
 
-      <div className="flex flex-1 gap-8 overflow-hidden sm:px-6 px-2 pb-6">
+      <div className="flex flex-1 h-full gap-8 overflow-hidden sm:px-6 px-2 pb-6">
         {isMobile ? (
           activeChat ? (
             <ChatContaineer goBack={() => setActiveChat(false)} />
@@ -52,7 +52,7 @@ const Homepage = () => {
         ) : (
           <>
             <Sidebar onChatSelect={() => setActiveChat(true)} />
-            <ChatContaineer  goBack={() => setActiveChat(false)} />
+            <ChatContaineer goBack={() => setActiveChat(false)} />
           </>
         )}
       </div>

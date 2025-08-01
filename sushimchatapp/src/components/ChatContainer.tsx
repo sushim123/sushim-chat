@@ -53,7 +53,7 @@ const ChatContaineer = ({ goBack }: { goBack: () => void }) => {
           ← Back
         </div>
       </div>
-      <div className=" flex flex-col sm:w-[1028px] w-[400px] h-[710px] sm:h-[630px] rounded-4xl bg-gradient-to-r from-[#000000]/20 to-[#000000]/20 shadow-inner-custom">
+      <div className=" flex flex-col sm:w-[1028px] w-full h-[710px] sm:h-[630px] rounded-4xl bg-gradient-to-r from-[#000000]/20 to-[#000000]/20 shadow-inner-custom">
         <div className="shrink-0">
           <ChatHeader />
         </div>

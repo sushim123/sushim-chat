@@ -175,7 +175,7 @@ const ChatMessages = () => {
               setSelectedMessageId(message._id);
             }}
             key={message._id}
-            className={`w-fit max-w-[70%]  text-white text-[18.2px] opacity-100 px-4 py-[13px] shadow-inner-custom rounded-[30px] bg-custom-gradient relative ${
+            className={`w-fit max-w-[70%] select-none text-white text-[18.2px] opacity-100 px-4 py-[13px] shadow-inner-custom rounded-[30px] bg-custom-gradient relative ${
               isSendByMe ? "self-end" : "self-start"
             } ${isSelected ? "border-2 border-blue-400" : ""}`}
           >
