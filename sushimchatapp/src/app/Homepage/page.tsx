@@ -7,15 +7,16 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const Homepage = () => {
-  const { logout, authUser } = useAuthStore();
+  const { logout, authUser, checkAuth } = useAuthStore();
   const router = useRouter();
-  const [isMobile, setIsMobile] = useState(false);
-  const [activeChat, setActiveChat] = useState(false);
   useEffect(() => {
     if (!authUser) {
       router.push("/login");
     }
+    checkAuth?.();
   }, [authUser, router]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeChat, setActiveChat] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -37,7 +38,7 @@ const Homepage = () => {
       <div className="flex sm:flex-row flex-col gap-2 justify-between items-center p-6">
         <h1 className="text-[#F1F1F3] text-[35px]">Sushim's Chat</h1>
         <div className="flex gap-6 text-white text-[18px]">
-          <motion.div whileHover={{ scale: 1.2 }}>Settings</motion.div>
+          {/* <motion.div whileHover={{ scale: 1.2 }}>Settings</motion.div> */}
           <motion.div
             whileHover={{ scale: 1.2 }}
             onClick={() => router.push("/profile")}
