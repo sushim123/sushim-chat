@@ -5,19 +5,33 @@ import { Instagram, Linkedin, Mail, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const ContactMePage = () => {
+  const { logout } = useAuthStore();
   const router = useRouter();
-
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
   return (
     <div className="min-h-screen bg-blue-950 flex flex-col items-center justify-start overflow-x-hidden text-white">
       {/* Header */}
       <div className="w-full pt-8 px-6 md:px-10 flex justify-between items-center">
-        <h1 className="text-[#F1F1F3] text-[28px] md:text-[35px] font-bold">
+        <h1
+          onClick={() => router.push("/Homepage")}
+          className="text-[#F1F1F3] text-[28px] md:text-[35px] font-bold"
+        >
           Sushim's Chat
         </h1>
         <div className="flex gap-6 text-[16px] md:text-[18px]">
-          <motion.div whileHover={{ scale: 1.2 }} className="cursor-pointer">
-            Settings
+          <motion.div
+            whileHover={{ scale: 1.2 }}
+            className="cursor-pointer"
+            onClick={() => router.push("/Homepage")}
+          >
+            Homepage
           </motion.div>
+          {/* <motion.div whileHover={{ scale: 1.2 }} className="cursor-pointer">
+            Settings
+          </motion.div> */}
           <motion.div
             whileHover={{ scale: 1.2 }}
             onClick={() => router.push("/profile")}
@@ -25,7 +39,11 @@ const ContactMePage = () => {
           >
             Profile
           </motion.div>
-          <motion.div whileHover={{ scale: 1.2 }} className="cursor-pointer">
+          <motion.div
+            whileHover={{ scale: 1.2 }}
+            className="cursor-pointer"
+            onClick={handleLogout}
+          >
             Logout
           </motion.div>
         </div>
@@ -44,7 +62,7 @@ const ContactMePage = () => {
           <div className="flex flex-col gap-4 text-base md:text-lg">
             <a
               href="mailto:sushimsushi8699@gmail.com"
-              className="flex items-center gap-3 bg-white/10 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
+              className="flex items-center gap-3 bg-white/20 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
             >
               <Mail size={20} /> sushimsushi8699@gmail.com
             </a>
@@ -53,7 +71,7 @@ const ContactMePage = () => {
               href="https://wa.me/919970165418"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-white/10 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
+              className="flex items-center gap-3 bg-white/20 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
             >
               <MessageCircle size={20} /> +91 99701 65418
             </a>
@@ -62,7 +80,7 @@ const ContactMePage = () => {
               href="https://instagram.com/__sushim__p.ts"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-white/10 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
+              className="flex items-center gap-3 bg-white/20 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
             >
               <Instagram size={20} /> @__sushim__p.ts
             </a>
@@ -71,7 +89,7 @@ const ContactMePage = () => {
               href="https://www.linkedin.com/in/sushim-padwekar-693960257/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-white/10 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
+              className="flex items-center gap-3 bg-white/20 border border-white/30 px-4 py-3 rounded-lg hover:bg-white/20 transition w-fit"
             >
               <Linkedin size={20} /> sushim padwekar
             </a>
@@ -103,9 +121,10 @@ const ContactMePage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="mt-2 bg-blue-600 hover:bg-blue-700 transition-colors duration-200 text-white font-semibold py-3 px-6 rounded-lg"
+              disabled={true}
+              className="mt-2 bg-blue-600 disabled:bg-blue-800 hover:bg-blue-700 transition-colors duration-200 text-white font-semibold py-3 px-6 rounded-lg"
             >
-              Send Message
+              Button is Currently Disabled
             </motion.button>
           </form>
         </motion.div>
