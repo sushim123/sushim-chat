@@ -18,7 +18,7 @@ export const protectRoute = (
 
       const token = req.cookies?.jwt;
       if (!token) {
-        return res.status(401).json({ message: "Unauthorized: No token" });
+        return res.status(401).json({ message: "Unauthorized: Login First " });
       }
 
       const jwtSecret = process.env.JWT_SECRET!;
