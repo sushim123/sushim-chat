@@ -44,6 +44,12 @@ const Homepage = () => {
           >
             Profile
           </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.2 }}
+            onClick={() => router.push("/contactme")}
+          >
+            Contact Me
+          </motion.div>
           <motion.div whileHover={{ scale: 1.2 }} onClick={handleLogout}>
             Logout
           </motion.div>
